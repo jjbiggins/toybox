@@ -62,9 +62,7 @@ def categorize(reverse, i, skippy=""):
   linky = "%s"
   out = i
 
-  if skippy: types = filter(lambda a: a != skippy, reverse[i])
-  else: types = reverse[i]
-
+  types = filter(lambda a: a != skippy, reverse[i]) if skippy else reverse[i]
   for j in conv:
     if j[0] in types:
       if j[1]: linky = j[1] % i
@@ -81,19 +79,19 @@ allcmd=[]
 done=[]
 pend=[]
 todo=[]
-blah=list(reverse)
-blah.sort()
+blah = sorted(reverse)
 for i in blah:
   out=categorize(reverse, i)
   allcmd.append(out)
-  if i in toystuff or i in pending:
+  if i in toystuff:
     if i in toystuff: done.append(out)
-    else: pend.append(out)
-    out='<strike>%s</strike>' % out
+    out = f'<strike>{out}</strike>'
+  elif i in pending:
+    pend.append(out)
+    out = f'<strike>{out}</strike>'
   else: todo.append(out)
 
-print "implemented=%s" % len(toystuff)
-
+allcmd=[]
 # Write data to output file
 
 outfile=open("www/status.html", "w")
@@ -118,7 +116,8 @@ for i in conv:
 
   for j in stuff[i]:
     if j in toystuff: continue
-    if j in pending: todo.append('<strike>%s</strike>' % j)
+    if j in pending:
+      todo.append(f'<strike>{j}</strike>')
     else: todo.append(categorize(reverse,j,i))
 
   if todo:
@@ -127,7 +126,7 @@ for i in conv:
       if j[0] == i:
         k = j[2] % i.split("_")[0]
 
-    outfile.write("<a name=%s><h2><a href=#%s>%s<a></h2><blockquote><p>" % (i,i,k))
+    outfile.write(f"<a name={i}><h2><a href=#{i}>{k}<a></h2><blockquote><p>")
     outfile.write(" ".join(todo))
     outfile.write("</p></blockquote>\n")
 
